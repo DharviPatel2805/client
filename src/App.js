@@ -1,25 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
+import React, { useState, useEffect } from 'react';
+import CommentList from './components/CommentList';
+import CommentForm from './components/CommentForm';
+import axios from 'axios';
+import './App.css';
+// src/index.js or src/App.js
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
+const App = () => {
+  const postId = 1; // Assuming postId is known
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`/api/posts/${postId}/comments`);
+        setComments(response.data);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+    };
+
+    fetchComments();
+  }, [postId]);
+
+  const handleNewComment = (newComment) => {
+    setComments(prevComments => [newComment, ...prevComments]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <h5 >Comments (22) </h5>
+      <hr/>
+      <CommentList comments={comments} />
+      <CommentForm postId={postId} onCommentCreated={handleNewComment} />
+      
     </div>
   );
-}
+};
 
 export default App;
